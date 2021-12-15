@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 
 import 'gbutton.dart';
 
+typedef PrePressCallback = Future<bool> Function();
+
 enum GnavStyle {
   google,
   oldSchool,
@@ -12,6 +14,7 @@ class GNav extends StatefulWidget {
     Key? key,
     required this.tabs,
     this.selectedIndex = 0,
+    this.prePressCallback,
     this.onTabChange,
     this.gap = 0,
     this.padding = const EdgeInsets.all(25),
@@ -38,6 +41,7 @@ class GNav extends StatefulWidget {
     this.textSize,
   }) : super(key: key);
 
+  final PrePressCallback? prePressCallback;
   final List<GButton> tabs;
   final int selectedIndex;
   final ValueChanged<int>? onTabChange;
@@ -122,12 +126,14 @@ class _GNavState extends State<GNav> {
                       haptic: widget.haptic,
                       leading: t.leading,
                       curve: widget.curve,
-                      backgroundGradient:
-                          t.backgroundGradient ?? widget.tabBackgroundGradient,
-                      backgroundColor:
-                          t.backgroundColor ?? widget.tabBackgroundColor,
+                      backgroundGradient: t.backgroundGradient ?? widget.tabBackgroundGradient,
+                      backgroundColor: t.backgroundColor ?? widget.tabBackgroundColor,
                       duration: widget.duration,
-                      onPressed: () {
+                      onPressed: () async {
+                        if (widget.prePressCallback != null) {
+                          final r = await widget.prePressCallback!.call();
+                          if (r != true) return;
+                        }
                         if (!clickable) return;
                         setState(() {
                           selectedIndex = widget.tabs.indexOf(t);
