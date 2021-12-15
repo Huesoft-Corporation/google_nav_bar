@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'gbutton.dart';
 
-typedef PrePressCallback = Future<bool> Function();
+typedef PrePressCallback = Future<bool> Function(int);
 
 enum GnavStyle {
   google,
@@ -131,7 +131,7 @@ class _GNavState extends State<GNav> {
                       duration: widget.duration,
                       onPressed: () async {
                         if (widget.prePressCallback != null) {
-                          final r = await widget.prePressCallback!.call();
+                          final r = await widget.prePressCallback!.call(widget.tabs.indexOf(t));
                           if (r != true) return;
                         }
                         if (!clickable) return;
